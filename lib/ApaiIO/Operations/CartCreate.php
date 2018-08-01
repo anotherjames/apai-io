@@ -41,12 +41,21 @@ class CartCreate extends AbstractOperation
      * @param string  $id       The ASIN or OfferListingId Number of the item
      * @param integer $quantity How much you want to add
      * @param bool    $byAsin   If False will use OfferListingId insted of ASIN
+     * @param bool    $asSoap   If true wrap item elements in an items element.
      */
-    public function addItem($id, $quantity, $byAsin = true)
+    public function addItem($id, $quantity, $byAsin = true, $asSoap = false)
     {
-        $itemIdentifier = ($byAsin) ? '.ASIN' : '.OfferListingId';
-        $this->parameter['Item.' . $this->itemCounter . $itemIdentifier] = $id;
-        $this->parameter['Item.' . $this->itemCounter . '.Quantity'] = $quantity;
+        $itemIdentifier = ($byAsin) ? 'ASIN' : 'OfferListingId';
+        if ($asSoap) {
+          $this->parameter['Items']['Item'][] = array(
+            $itemIdentifier => $id,
+            'Quantity' => $quantity,
+          );
+        }
+        else {
+          $this->parameter['Item.' . $this->itemCounter . $itemIdentifier] = $id;
+          $this->parameter['Item.' . $this->itemCounter . '.Quantity'] = $quantity;
+        }
 
         $this->itemCounter++;
     }
